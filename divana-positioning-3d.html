@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bangkok Wellness Clinic Positioning — Divana Clinique Strategy</title>
+<meta name="description" content="Interactive 3D positioning map of Bangkok wellness and longevity clinics, plotting price tier, aesthetic vs anti-aging focus, and spa vs medical DNA.">
+<style>
+:root {
+  --bg: #F1EFE8;
+  --surface: #FFFFFF;
+  --text-primary: #2C2C2A;
+  --text-secondary: #5F5E5A;
+  --text-tertiary: #888780;
+  --border: rgba(0,0,0,0.1);
+  --border-strong: rgba(0,0,0,0.2);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #1A1A19;
+    --surface: #2C2C2A;
+    --text-primary: #F1EFE8;
+    --text-secondary: #D3D1C7;
+    --text-tertiary: #888780;
+    --border: rgba(255,255,255,0.1);
+    --border-strong: rgba(255,255,255,0.2);
+  }
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  min-height: 100vh;
+  padding: 24px;
+  line-height: 1.6;
+}
+
+.container { max-width: 1200px; margin: 0 auto; }
+
+header { margin-bottom: 20px; }
+
+h1 {
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+
+.subtitle { font-size: 14px; color: var(--text-secondary); }
+
+.viz-wrap {
+  position: relative;
+  width: 100%;
+  height: 640px;
+  background: var(--surface);
+  border-radius: 12px;
+  border: 0.5px solid var(--border);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.viz-canvas { width: 100%; height: 100%; display: block; cursor: grab; }
+.viz-canvas:active { cursor: grabbing; }
+
+.viz-legend {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  background: var(--surface);
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 0.5px solid var(--border);
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.9;
+  max-width: 240px;
+}
+
+.viz-legend .row { display: flex; align-items: center; gap: 8px; }
+.viz-legend .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+.viz-hint {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: var(--surface);
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 0.5px solid var(--border);
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+.viz-tooltip {
+  position: absolute;
+  background: var(--surface);
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 0.5px solid var(--border-strong);
+  font-size: 13px;
+  color: var(--text-primary);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  white-space: nowrap;
+  font-weight: 500;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.viz-tooltip .sub {
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-weight: 400;
+  margin-top: 2px;
+}
+
+.notes {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.notes h2 {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.notes ul { list-style: none; padding-left: 0; }
+.notes li { padding: 4px 0; }
+.notes li::before { content: "— "; color: var(--text-tertiary); }
+
+footer {
+  margin-top: 24px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  body { padding: 16px; }
+  h1 { font-size: 20px; }
+  .viz-wrap { height: 480px; }
+  .viz-legend { font-size: 11px; max-width: 180px; padding: 8px 10px; }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<header>
+<h1>Bangkok Wellness Clinic — 3D Positioning Map</h1>
+<p class="subtitle">Price tier × Aesthetic vs Anti-aging × Spa vs Medical DNA</p>
+</header>
+
+<div class="viz-wrap">
+<canvas class="viz-canvas" id="c3d"></canvas>
+<div class="viz-hint">Drag to rotate · scroll to zoom · hover for details</div>
+<div class="viz-tooltip" id="tt"></div>
+<div class="viz-legend">
+<div class="row"><span class="dot" style="background:#1D9E75"></span>Spa-led</div>
+<div class="row"><span class="dot" style="background:#97C459"></span>Spa-leaning</div>
+<div class="row"><span class="dot" style="background:#7F77DD"></span>Hotel-hybrid</div>
+<div class="row"><span class="dot" style="background:#D85A30"></span>Pure medical</div>
+<div class="row"><span class="dot" style="background:#F2C94C;border:1.5px dashed #85570B"></span>Divana Clinique target</div>
+</div>
+</div>
+
+<div class="notes">
+<h2>How to read this map</h2>
+<ul>
+<li><strong>X-axis (Price tier):</strong> Mass → Ultra-luxury</li>
+<li><strong>Y-axis (Service focus):</strong> Aesthetic (top) ↔ Anti-aging (bottom)</li>
+<li><strong>Z-axis (DNA origin):</strong> Spa heritage (front) ↔ Medical DNA (back)</li>
+<li><strong>Mid-planes (dashed frames):</strong> 50% marks on each axis, dividing the cube into 8 octants</li>
+<li><strong>Drop lines:</strong> Project each clinic down to the price–DNA floor</li>
+</ul>
+</div>
+
+<footer>
+Strategic analysis — positioning assessed from public materials. Positions are qualitative and subject to revision.
+</footer>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function() {
+  const canvas = document.getElementById('c3d');
+  const tt = document.getElementById('tt');
+  const wrap = canvas.parentElement;
+
+  const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+  const bg = dark ? 0x2C2C2A : 0xF1EFE8;
+  const gridCol = dark ? 0x5F5E5A : 0xB4B2A9;
+  const axisCol = dark ? 0xD3D1C7 : 0x444441;
+  const labelCol = dark ? '#D3D1C7' : '#2C2C2A';
+  const midCol = dark ? 0x888780 : 0x5F5E5A;
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(bg);
+
+  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+  let camRadius = 14, camTheta = 0.9, camPhi = 1.2;
+  function updateCam() {
+    camera.position.x = camRadius * Math.sin(camPhi) * Math.cos(camTheta);
+    camera.position.y = camRadius * Math.cos(camPhi);
+    camera.position.z = camRadius * Math.sin(camPhi) * Math.sin(camTheta);
+    camera.lookAt(0, 0, 0);
+  }
+
+  const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+  function resize() {
+    const w = wrap.clientWidth, h = wrap.clientHeight;
+    renderer.setSize(w, h, false);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+  const dl = new THREE.DirectionalLight(0xffffff, 0.4);
+  dl.position.set(5, 10, 7);
+  scene.add(dl);
+
+  const L = 5;
+  const floor = new THREE.Mesh(
+    new THREE.PlaneGeometry(L * 2, L * 2),
+    new THREE.MeshBasicMaterial({ color: gridCol, transparent: true, opacity: 0.08, side: THREE.DoubleSide })
+  );
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.y = -L;
+  scene.add(floor);
+
+  const grid = new THREE.GridHelper(L * 2, 8, gridCol, gridCol);
+  grid.material.opacity = 0.25;
+  grid.material.transparent = true;
+  grid.position.y = -L;
+  scene.add(grid);
+
+  function makeMidplane(axis) {
+    const geom = new THREE.PlaneGeometry(L * 2, L * 2);
+    const mat = new THREE.MeshBasicMaterial({ color: midCol, transparent: true, opacity: 0.05, side: THREE.DoubleSide, depthWrite: false });
+    const m = new THREE.Mesh(geom, mat);
+    if (axis === 'x') m.rotation.y = Math.PI / 2;
+    else if (axis === 'y') m.rotation.x = Math.PI / 2;
+    scene.add(m);
+    return m;
+  }
+  makeMidplane('x');
+  makeMidplane('y');
+  makeMidplane('z');
+
+  function makeMidFrame(axis) {
+    const pts = [];
+    if (axis === 'x') {
+      pts.push(new THREE.Vector3(0, -L, -L), new THREE.Vector3(0, L, -L));
+      pts.push(new THREE.Vector3(0, L, -L), new THREE.Vector3(0, L, L));
+      pts.push(new THREE.Vector3(0, L, L), new THREE.Vector3(0, -L, L));
+      pts.push(new THREE.Vector3(0, -L, L), new THREE.Vector3(0, -L, -L));
+    } else if (axis === 'y') {
+      pts.push(new THREE.Vector3(-L, 0, -L), new THREE.Vector3(L, 0, -L));
+      pts.push(new THREE.Vector3(L, 0, -L), new THREE.Vector3(L, 0, L));
+      pts.push(new THREE.Vector3(L, 0, L), new THREE.Vector3(-L, 0, L));
+      pts.push(new THREE.Vector3(-L, 0, L), new THREE.Vector3(-L, 0, -L));
+    } else {
+      pts.push(new THREE.Vector3(-L, -L, 0), new THREE.Vector3(L, -L, 0));
+      pts.push(new THREE.Vector3(L, -L, 0), new THREE.Vector3(L, L, 0));
+      pts.push(new THREE.Vector3(L, L, 0), new THREE.Vector3(-L, L, 0));
+      pts.push(new THREE.Vector3(-L, L, 0), new THREE.Vector3(-L, -L, 0));
+    }
+    const g = new THREE.BufferGeometry().setFromPoints(pts);
+    const m = new THREE.LineDashedMaterial({ color: midCol, dashSize: 0.25, gapSize: 0.18, transparent: true, opacity: 0.55 });
+    const line = new THREE.LineSegments(g, m);
+    line.computeLineDistances();
+    scene.add(line);
+  }
+  makeMidFrame('x');
+  makeMidFrame('y');
+  makeMidFrame('z');
+
+  function axisLine(from, to, col) {
+    const g = new THREE.BufferGeometry().setFromPoints([from, to]);
+    const m = new THREE.LineBasicMaterial({ color: col, linewidth: 2 });
+    return new THREE.Line(g, m);
+  }
+  scene.add(axisLine(new THREE.Vector3(-L, -L, -L), new THREE.Vector3(L, -L, -L), axisCol));
+  scene.add(axisLine(new THREE.Vector3(-L, -L, -L), new THREE.Vector3(-L, L, -L), axisCol));
+  scene.add(axisLine(new THREE.Vector3(-L, -L, -L), new THREE.Vector3(-L, -L, L), axisCol));
+
+  function makeLabel(text, color, scaleX, scaleY) {
+    const cnv = document.createElement('canvas');
+    cnv.width = 256; cnv.height = 64;
+    const ctx = cnv.getContext('2d');
+    ctx.font = '500 22px sans-serif';
+    ctx.fillStyle = color;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, 128, 32);
+    const tex = new THREE.CanvasTexture(cnv);
+    tex.minFilter = THREE.LinearFilter;
+    const mat = new THREE.SpriteMaterial({ map: tex, transparent: true });
+    const sp = new THREE.Sprite(mat);
+    sp.scale.set(scaleX || 2.4, scaleY || 0.6, 1);
+    return sp;
+  }
+
+  function addAxisLabels(from, to, labels, col) {
+    labels.forEach((t, i) => {
+      const u = i / (labels.length - 1);
+      const lbl = makeLabel(t, col);
+      lbl.position.set(
+        from.x + (to.x - from.x) * u,
+        from.y + (to.y - from.y) * u,
+        from.z + (to.z - from.z) * u
+      );
+      scene.add(lbl);
+    });
+  }
+
+  const priceLbl = makeLabel('Price tier →', labelCol);
+  priceLbl.position.set(0, -L - 0.8, -L);
+  scene.add(priceLbl);
+  addAxisLabels(
+    new THREE.Vector3(-L, -L - 0.4, -L),
+    new THREE.Vector3(L, -L - 0.4, -L),
+    ['Mass', 'Upper-mid', 'Luxury', 'Ultra-lux'],
+    labelCol
+  );
+
+  const focusLbl = makeLabel('↑ Aesthetic', labelCol);
+  focusLbl.position.set(-L - 1.2, L, -L);
+  scene.add(focusLbl);
+  const focusLbl2 = makeLabel('Anti-aging ↓', labelCol);
+  focusLbl2.position.set(-L - 1.2, -L, -L);
+  scene.add(focusLbl2);
+
+  const dnaLbl = makeLabel('Spa heritage', labelCol);
+  dnaLbl.position.set(-L - 0.6, -L - 0.4, L + 0.4);
+  scene.add(dnaLbl);
+  const dnaLbl2 = makeLabel('Medical DNA', labelCol);
+  dnaLbl2.position.set(-L - 0.6, -L - 0.4, -L - 0.4);
+  scene.add(dnaLbl2);
+
+  const midLblCol = dark ? '#888780' : '#5F5E5A';
+  const midP = makeLabel('50% price', midLblCol, 1.8, 0.45);
+  midP.position.set(0, -L - 0.15, -L + 0.4);
+  scene.add(midP);
+  const midF = makeLabel('balanced', midLblCol, 1.6, 0.45);
+  midF.position.set(-L + 0.4, 0, -L - 0.1);
+  scene.add(midF);
+  const midD = makeLabel('hybrid DNA', midLblCol, 1.8, 0.45);
+  midD.position.set(-L + 0.4, -L - 0.15, 0);
+  scene.add(midD);
+
+  const clinics = [
+    { name: 'SKNN', sub: 'Medical aesthetic · upper-mid', x: -1.5, y: 3.5, z: -3.5, col: 0xD85A30 },
+    { name: 'KKC', sub: 'Medical aesthetic · upper-mid', x: -2.0, y: 3.0, z: -3.5, col: 0xD85A30 },
+    { name: 'ESS Wellness', sub: 'NAD+/Stem cell + spa ambience · upper-mid', x: -2.8, y: -2.2, z: 2.0, col: 0x97C459 },
+    { name: 'Behap', sub: 'Orthopedic + aesthetic · upper-mid', x: -2.5, y: 2.5, z: -3.0, col: 0xD85A30 },
+    { name: 'Atier main', sub: 'Aesthetic surgery · upper-mid', x: -1.8, y: 2.2, z: -3.2, col: 0xD85A30 },
+    { name: 'Astrid', sub: 'Aesthetic dermatology · luxury', x: 2.5, y: 3.5, z: -2.8, col: 0xD85A30 },
+    { name: 'Mediwelle', sub: 'Integrative aesthetic · upper-mid', x: -0.8, y: 0.5, z: -2.5, col: 0xD85A30 },
+    { name: 'Caramel', sub: 'Balanced medical · upper-mid', x: -1.2, y: -0.5, z: -2.8, col: 0xD85A30 },
+    { name: 'Atier Longevity', sub: 'Balanced luxury · Mahanakhon', x: 1.5, y: 0.3, z: -2.8, col: 0xD85A30 },
+    { name: 'VIVID', sub: 'IV bar in hotel · upper-mid', x: -1.0, y: -1.2, z: -1.5, col: 0x7F77DD },
+    { name: 'Revival', sub: 'Stem cell anti-aging · luxury', x: 2.0, y: -2.0, z: -3.5, col: 0xD85A30 },
+    { name: 'Mousai', sub: 'Arab medical tourism · luxury', x: 1.8, y: -3.0, z: -3.8, col: 0xD85A30 },
+    { name: 'Healthi-Life', sub: 'International stem cell · luxury', x: 3.5, y: -3.5, z: -3.8, col: 0xD85A30 },
+    { name: "S'RENE by SLC", sub: 'Hospital-based urban · upper-mid', x: -0.8, y: -3.5, z: -3.8, col: 0xD85A30 },
+    { name: 'Wellness Thonglor', sub: 'Integrative preventive · upper-mid', x: 0.3, y: -4.0, z: -3.5, col: 0xD85A30 },
+    { name: 'Navella', sub: 'Preventive medical · upper-mid', x: -1.5, y: -4.2, z: -3.5, col: 0xD85A30 },
+    { name: 'BDMS Wellness', sub: 'Hospital-grade longevity · ultra-lux', x: 4.0, y: -3.8, z: -3.8, col: 0xD85A30 },
+    { name: 'RAKxa', sub: 'Integrative retreat · luxury', x: 2.5, y: -2.5, z: 3.5, col: 0x1D9E75, big: true },
+    { name: 'Aman/Hertitude', sub: 'IV/cryo/blood panel in luxury hotel · ultra-lux', x: 4.2, y: -2.5, z: 0.5, col: 0x7F77DD, big: true },
+    { name: 'La Prairie', sub: 'Longevity & biohacking hub · ultra-lux', x: 3.5, y: -3.0, z: 0.0, col: 0x7F77DD, big: true },
+  ];
+
+  const raycast = new THREE.Raycaster();
+  const mouse = new THREE.Vector2();
+  const dots = [];
+
+  clinics.forEach(c => {
+    const r = c.big ? 0.22 : 0.17;
+    const mesh = new THREE.Mesh(
+      new THREE.SphereGeometry(r, 24, 24),
+      new THREE.MeshLambertMaterial({ color: c.col })
+    );
+    mesh.position.set(c.x, c.y, c.z);
+    mesh.userData = c;
+    scene.add(mesh);
+    dots.push(mesh);
+
+    const lineGeom = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(c.x, c.y, c.z),
+      new THREE.Vector3(c.x, -L, c.z)
+    ]);
+    const lineMat = new THREE.LineDashedMaterial({ color: c.col, opacity: 0.35, transparent: true, dashSize: 0.15, gapSize: 0.15 });
+    const line = new THREE.Line(lineGeom, lineMat);
+    line.computeLineDistances();
+    scene.add(line);
+
+    const floorDot = new THREE.Mesh(
+      new THREE.CircleGeometry(0.08, 16),
+      new THREE.MeshBasicMaterial({ color: c.col, transparent: true, opacity: 0.35 })
+    );
+    floorDot.rotation.x = -Math.PI / 2;
+    floorDot.position.set(c.x, -L + 0.01, c.z);
+    scene.add(floorDot);
+  });
+
+  const targetGeom = new THREE.BoxGeometry(1.8, 1.0, 1.6);
+  const targetMat = new THREE.MeshBasicMaterial({ color: 0xF2C94C, transparent: true, opacity: 0.18, wireframe: false });
+  const target = new THREE.Mesh(targetGeom, targetMat);
+  target.position.set(3.2, -2.0, 3.0);
+  target.userData = { name: 'Divana Clinique', sub: 'Target · spa heritage + luxury + 7S anti-aging lean' };
+  scene.add(target);
+
+  const targetEdges = new THREE.LineSegments(
+    new THREE.EdgesGeometry(targetGeom),
+    new THREE.LineDashedMaterial({ color: 0x85570B, dashSize: 0.12, gapSize: 0.08 })
+  );
+  targetEdges.computeLineDistances();
+  targetEdges.position.copy(target.position);
+  scene.add(targetEdges);
+  dots.push(target);
+
+  const targetLbl = makeLabel('Divana Clinique', '#85570B');
+  targetLbl.position.set(3.2, -1.3, 3.0);
+  targetLbl.scale.set(2.2, 0.55, 1);
+  scene.add(targetLbl);
+
+  let isDown = false, downX = 0, downY = 0, startTheta = 0, startPhi = 0;
+  canvas.addEventListener('pointerdown', e => {
+    isDown = true;
+    downX = e.clientX; downY = e.clientY;
+    startTheta = camTheta; startPhi = camPhi;
+    canvas.setPointerCapture(e.pointerId);
+  });
+  canvas.addEventListener('pointermove', e => {
+    if (isDown) {
+      const dx = e.clientX - downX, dy = e.clientY - downY;
+      camTheta = startTheta - dx * 0.008;
+      camPhi = Math.max(0.3, Math.min(Math.PI - 0.3, startPhi + dy * 0.008));
+      updateCam();
+    } else {
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+      raycast.setFromCamera(mouse, camera);
+      const hits = raycast.intersectObjects(dots);
+      if (hits.length > 0) {
+        const d = hits[0].object.userData;
+        tt.innerHTML = d.name + '<div class="sub">' + d.sub + '</div>';
+        tt.style.left = (e.clientX - rect.left + 14) + 'px';
+        tt.style.top = (e.clientY - rect.top + 14) + 'px';
+        tt.style.opacity = '1';
+      } else {
+        tt.style.opacity = '0';
+      }
+    }
+  });
+  canvas.addEventListener('pointerup', () => { isDown = false; });
+  canvas.addEventListener('pointerleave', () => { isDown = false; tt.style.opacity = '0'; });
+  canvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    camRadius = Math.max(7, Math.min(25, camRadius + e.deltaY * 0.01));
+    updateCam();
+  }, { passive: false });
+
+  updateCam();
+
+  function animate() {
+    requestAnimationFrame(animate);
+    renderer.render(scene, camera);
+  }
+  animate();
+})();
+</script>
+
+</body>
+</html>
