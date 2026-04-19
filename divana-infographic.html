@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Divana Clinique — Positioning Strategy</title>
+<style>
+:root {
+  --bg: #F1EFE8;
+  --surface: #FFFFFF;
+  --surface-2: #FAF9F5;
+  --text-primary: #2C2C2A;
+  --text-secondary: #5F5E5A;
+  --text-tertiary: #888780;
+  --accent: #639922;
+  --accent-soft: #EAF3DE;
+  --accent-dark: #3B6D11;
+  --warning: #BA7517;
+  --warning-soft: #FAEEDA;
+  --warning-dark: #854F0B;
+  --danger: #A32D2D;
+  --danger-soft: #FCEBEB;
+  --danger-dark: #791F1F;
+  --border: rgba(0,0,0,0.08);
+  --border-strong: rgba(0,0,0,0.15);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: "Noto Sans Thai", "Sukhumvit Set", -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  padding: 32px 16px;
+  line-height: 1.7;
+  font-size: 14px;
+}
+
+.page {
+  max-width: 960px;
+  margin: 0 auto;
+  background: var(--surface);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 24px rgba(0,0,0,0.04);
+}
+
+header {
+  background: linear-gradient(135deg, #3B6D11 0%, #639922 100%);
+  color: #FFFFFF;
+  padding: 40px 48px;
+}
+
+.eyebrow {
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.8;
+  margin-bottom: 8px;
+}
+
+h1 {
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.3;
+  margin-bottom: 4px;
+}
+
+.tagline {
+  font-size: 15px;
+  opacity: 0.9;
+  font-style: italic;
+}
+
+.content {
+  padding: 40px 48px;
+}
+
+.section { margin-bottom: 40px; }
+.section:last-child { margin-bottom: 0; }
+
+.section-number {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+  border-radius: 50%;
+  text-align: center;
+  line-height: 28px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+h2 {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+}
+
+h3 {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  margin-top: 16px;
+}
+
+h3:first-child { margin-top: 0; }
+
+p { margin-bottom: 10px; color: var(--text-secondary); }
+
+.target-box {
+  background: var(--accent-soft);
+  border-left: 4px solid var(--accent);
+  border-radius: 0 12px 12px 0;
+  padding: 20px 24px;
+}
+
+.target-box .label {
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent-dark);
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.target-box .statement {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--accent-dark);
+  line-height: 1.5;
+}
+
+.target-attrs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.attr {
+  background: var(--surface);
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 0.5px solid var(--border);
+}
+
+.attr-label {
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin-bottom: 2px;
+}
+
+.attr-value {
+  font-size: 13px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.card {
+  background: var(--surface-2);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.card.warning {
+  background: var(--warning-soft);
+  border-color: rgba(186,117,23,0.3);
+}
+
+.card.warning h3 { color: var(--warning-dark); }
+
+.card.ocean-red {
+  background: var(--danger-soft);
+  border-left: 3px solid var(--danger);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.card.ocean-red .title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--danger-dark);
+  margin-bottom: 6px;
+}
+
+.card.ocean-red .players {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.card.ocean-blue {
+  background: var(--accent-soft);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.card.ocean-blue .title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--accent-dark);
+  margin-bottom: 6px;
+}
+
+.card.ocean-blue .players {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+th, td {
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 0.5px solid var(--border);
+  vertical-align: top;
+}
+
+th {
+  background: var(--surface-2);
+  color: var(--text-tertiary);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+td:first-child { font-weight: 500; color: var(--text-primary); width: 35%; }
+td { color: var(--text-secondary); }
+
+.moat-list {
+  counter-reset: moat;
+  list-style: none;
+  padding: 0;
+}
+
+.moat-list li {
+  counter-increment: moat;
+  padding: 12px 16px 12px 48px;
+  background: var(--surface-2);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  position: relative;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.moat-list li::before {
+  content: counter(moat);
+  position: absolute;
+  left: 16px;
+  top: 12px;
+  width: 22px;
+  height: 22px;
+  background: var(--accent);
+  color: #FFFFFF;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 22px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.moat-list strong { color: var(--text-primary); font-weight: 500; }
+
+.pillar-box {
+  background: linear-gradient(135deg, #FAF9F5 0%, #EAF3DE 100%);
+  border: 0.5px solid rgba(99,153,34,0.2);
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+}
+
+.pillar-box .tag {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--accent-dark);
+  line-height: 1.4;
+  margin-bottom: 10px;
+}
+
+.pillar-box .en {
+  font-size: 14px;
+  font-style: italic;
+  color: var(--accent-dark);
+  opacity: 0.8;
+}
+
+.risks { padding-left: 0; list-style: none; }
+.risks li {
+  padding: 10px 14px 10px 36px;
+  margin-bottom: 6px;
+  position: relative;
+  font-size: 13px;
+  color: var(--text-secondary);
+  background: var(--warning-soft);
+  border-radius: 8px;
+}
+.risks li::before {
+  content: "!";
+  position: absolute;
+  left: 12px;
+  top: 10px;
+  width: 18px;
+  height: 18px;
+  background: var(--warning);
+  color: #FFFFFF;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 18px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.risks strong { color: var(--warning-dark); font-weight: 500; }
+
+.action-list {
+  list-style: none;
+  padding: 0;
+  counter-reset: action;
+}
+
+.action-list li {
+  counter-increment: action;
+  padding: 10px 14px 10px 40px;
+  margin-bottom: 6px;
+  position: relative;
+  font-size: 13px;
+  color: var(--text-secondary);
+  background: var(--surface-2);
+  border-radius: 8px;
+  border-left: 2px solid var(--accent);
+}
+
+.action-list li::before {
+  content: counter(action);
+  position: absolute;
+  left: 12px;
+  top: 10px;
+  width: 20px;
+  height: 20px;
+  background: var(--accent);
+  color: #FFFFFF;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 20px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.action-list strong { color: var(--text-primary); font-weight: 500; }
+
+footer {
+  background: var(--surface-2);
+  padding: 20px 48px;
+  border-top: 0.5px solid var(--border);
+  font-size: 11px;
+  color: var(--text-tertiary);
+  text-align: center;
+}
+
+footer .meta { margin-bottom: 4px; }
+footer .disclaimer { font-style: italic; }
+
+@media print {
+  body { background: #FFFFFF; padding: 0; }
+  .page { box-shadow: none; border-radius: 0; }
+}
+
+@media (max-width: 720px) {
+  .content { padding: 24px; }
+  header { padding: 28px 24px; }
+  h1 { font-size: 22px; }
+  .target-attrs { grid-template-columns: 1fr 1fr; }
+  .two-col { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+<header>
+<div class="eyebrow">Strategy Brief · เมษายน 2026</div>
+<h1>Divana Clinique Silom</h1>
+<div class="tagline">Positioning Analysis & Brand Strategy One-Pager</div>
+</header>
+
+<div class="content">
+
+<!-- Section 1: Target Position -->
+<div class="section">
+<h2><span class="section-number">1</span>Target Position</h2>
+<div class="target-box">
+<div class="label">Core Position Statement</div>
+<div class="statement">Urban Luxury · Anti-aging · Spa Heritage</div>
+<div class="target-attrs">
+<div class="attr">
+<div class="attr-label">Price tier</div>
+<div class="attr-value">Upper-luxury<br><span style="color:var(--text-tertiary);font-weight:400;font-size:11px">30-50% ต่ำกว่า Aman</span></div>
+</div>
+<div class="attr">
+<div class="attr-label">Service focus</div>
+<div class="attr-value">Anti-aging<br><span style="color:var(--text-tertiary);font-weight:400;font-size:11px">5 ใน 7 pillars ของ 7S</span></div>
+</div>
+<div class="attr">
+<div class="attr-label">DNA origin</div>
+<div class="attr-value">Spa heritage<br><span style="color:var(--text-tertiary);font-weight:400;font-size:11px">จาก Divana Virtue Spa</span></div>
+</div>
+<div class="attr">
+<div class="attr-label">Target customer</div>
+<div class="attr-value">Thai + Expat<br><span style="color:var(--text-tertiary);font-weight:400;font-size:11px">Urban professionals</span></div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Section 2: Market Structure -->
+<div class="section">
+<h2><span class="section-number">2</span>โครงสร้างตลาด Bangkok</h2>
+
+<h3 style="color:var(--danger-dark)">Red Ocean (ตลาดที่แน่น หลีกเลี่ยง)</h3>
+<div class="two-col" style="margin-bottom:16px">
+<div class="card ocean-red">
+<div class="title">Upper-mid Aesthetic Medical</div>
+<div class="players">SKNN · KKC · Atier main · Behap · Mediwelle · Caramel — แข่งด้วย Botox/Filler/HIFU/Laser</div>
+</div>
+<div class="card ocean-red">
+<div class="title">Upper-mid/Luxury Anti-aging Medical</div>
+<div class="players">BDMS · S'RENE · Navella · Wellness Thonglor · Mousai · Revival · Healthi-Life — commodity preventive medicine</div>
+</div>
+</div>
+
+<h3 style="color:var(--accent-dark)">White Space (โซนที่ Divana จะเข้า)</h3>
+<div class="two-col">
+<div class="card ocean-blue">
+<div class="title">Urban Luxury · Anti-aging · Spa heritage</div>
+<div class="players">คู่เปรียบเดียวในเชิง category: RAKxa แต่เป็น destination retreat (บางกระเจ้า) — Divana จะเป็น urban first-mover</div>
+</div>
+<div class="card ocean-blue">
+<div class="title">ฝั่ง Spa heritage ทั้งครึ่ง cube</div>
+<div class="players">เกือบว่างสนิท มีเพียง ESS Wellness (upper-mid) และ RAKxa (destination). ไม่มี Thai spa brand ไหนที่ extend เข้า urban clinic</div>
+</div>
+</div>
+</div>
+
+<!-- Section 3: RAKxa head-to-head -->
+<div class="section">
+<h2><span class="section-number">3</span>Direct Competitor — RAKxa</h2>
+<p style="margin-bottom:8px"><strong style="color:var(--text-primary)">RAKxa</strong> เป็น direct category competitor และเป็นตัว educate ตลาดให้แล้ว — Divana ไม่ต้องสร้าง category ใหม่ แค่ต้อง differentiate ที่ brand level</p>
+<table>
+<thead>
+<tr><th>มิติ</th><th style="color:var(--danger-dark)">RAKxa</th><th style="color:var(--accent-dark)">Divana Clinique</th></tr>
+</thead>
+<tbody>
+<tr><td>Location</td><td>Destination retreat (บางกระเจ้า)</td><td>Urban (Silom, walkable)</td></tr>
+<tr><td>Program format</td><td>Stay-in 3-7 วัน</td><td>Drop-in + program mix</td></tr>
+<tr><td>DNA origin</td><td>Medical-led (VitalLife)</td><td>Spa-led (Divana heritage)</td></tr>
+<tr><td>Network effect</td><td>Single location</td><td>Integrated กับ Divana Virtue Spa</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- Section 4: Moats -->
+<div class="section">
+<h2><span class="section-number">4</span>Structural Moats ของ Divana</h2>
+<ol class="moat-list">
+<li><strong>Spa brand heritage 20+ ปี</strong> — ไม่มี Bangkok clinic รายใดมี asset นี้</li>
+<li><strong>Integration กับ Divana Virtue Spa</strong> — shared facility + warm audience existing (spa regulars convert ได้ทันที)</li>
+<li><strong>Urban luxury location</strong> — RAKxa ไม่มี, Aman tier สูงเกิน</li>
+<li><strong>7S framework execution</strong> — ถ้าทำครบ 7 pillars จะเป็น framework moat ที่ copy ยาก</li>
+</ol>
+</div>
+
+<!-- Section 5: Brand Pillar -->
+<div class="section">
+<h2><span class="section-number">5</span>Brand Pillar ที่แนะนำ</h2>
+<div class="pillar-box">
+<div class="tag">"Urban alternative to RAKxa,<br>Spa-first approach"</div>
+<div class="en">Where Thai Sanctuary Meets Longevity Science</div>
+</div>
+<div style="margin-top:16px;font-size:12px;color:var(--text-tertiary);text-align:center">
+ต่างจาก RAKxa (urban vs destination, spa-led vs medical-led) · ต่างจาก Aman/La Prairie (Thai heritage vs global luxury) · ต่างจาก S'RENE/BDMS (spa DNA vs medical-only)
+</div>
+</div>
+
+<!-- Section 6: Risks -->
+<div class="section">
+<h2><span class="section-number">6</span>ข้อควรกังวล</h2>
+<ul class="risks">
+<li><strong>Market size risk</strong> — 4-5 ปีผ่านมาไม่มี urban alternative to RAKxa โผล่มา อาจหมายถึงตลาดยังไม่ใหญ่พอ หรือ barrier สูงเกินไป</li>
+<li><strong>Positioning clarity vs RAKxa</strong> — category เดียวกัน ต้อง sharp differentiation จาก day 1</li>
+<li><strong>Expat perception</strong> — "Thai spa heritage" อาจสื่อ relaxation มากกว่า medical competence ต้องมี Western medical credentialing ที่ visible</li>
+<li><strong>Copy risk ใน 2-3 ปี</strong> — spa brand อื่น (Oasis, Banyan Tree Wellness) อาจตามมาถ้า Divana proof of concept สำเร็จ</li>
+</ul>
+</div>
+
+<!-- Section 7: Action Items -->
+<div class="section">
+<h2><span class="section-number">7</span>Action Items ก่อน Commit</h2>
+<ol class="action-list">
+<li><strong>Experience RAKxa ด้วยตัวเอง</strong> — จอง stay 2-3 วัน เข้าใจ guest journey, pain points, จุดแข็ง/อ่อน</li>
+<li><strong>Customer interview spa regulars</strong> — validate ว่าต้องการ clinic services ใน sanctuary setting จริงไหม</li>
+<li><strong>Market sizing</strong> — ดู RAKxa financial performance หรือ proxy signals ประเมิน TAM</li>
+<li><strong>English review strategy</strong> — plan Google Reviews campaign ตั้งแต่ Day 1 เพื่อ convert expat segment</li>
+</ol>
+</div>
+
+</div>
+
+<footer>
+<div class="meta">Prepared for Divana Clinique Silom project · Internal use only</div>
+<div class="disclaimer">Positioning assessed from public materials and industry knowledge · Qualitative analysis subject to revision</div>
+</footer>
+
+</div>
+
+</body>
+</html>
